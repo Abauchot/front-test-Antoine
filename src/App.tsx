@@ -2,7 +2,14 @@ import React, { useState } from "react";
 import "./App.css";
 import { Box, Button, Divider, Flex } from "@chakra-ui/react";
 
-const gens = [
+interface Profile {
+    name: string;
+    age: string;
+    description: string;
+}
+
+
+const gens : Profile[] = [
     {
         name: "Alain Térieur",
         age: "12",
@@ -128,12 +135,12 @@ function App() {
                 </Box>
             </Flex>
 
-            {gens.map((profie, index) => (
+            {gens.map((profile : Profile, index: number) => (
                 <Profile
                     key={index}
-                    name={profie.name}
-                    age={profie.age}
-                    onClick={() => displayProfile(profie.name)}
+                    name={profile.name}
+                    age={profile.age}
+                    onClick={() => displayProfile(profile.name)}
                 />
             ))}
             <Box>Moyenne d'age : ???</Box>
