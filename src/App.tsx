@@ -84,12 +84,12 @@ const gens : Profile[] = [
     },
 ];
 
-
-
 function App() {
     const [profileDisplayed, setProfileDisplayed] = useState("");
     const [sortedByAge, setSortedByAge] = useState<"asc" | "desc">("asc");
     const [sortedProfiles, setSortedProfiles] = useState<Profile[]>([]);
+    const [averageAge, setAverageAge] = useState<number>(0);
+
 
     useEffect(() => {
         sortProfilesByAge();
@@ -129,6 +129,7 @@ function App() {
         );
     }
 
+//trier par age
     const sortProfilesByAge = () => {
         const sortedGens = [...gens];
         sortedGens.sort((a, b) => {
@@ -140,6 +141,18 @@ function App() {
         });
         setSortedByAge(sortedByAge === "asc" ? "desc" : "asc");
         setSortedProfiles(sortedGens);
+        const averageAge = calculateAverageAge(sortedGens);
+        setAverageAge(averageAge);
+    };
+
+
+    const calculateAverageAge = (profiles: Profile[]): number => {
+        if (profiles.length === 0) {
+            return 0;
+        }
+
+        const totalAge = profiles.reduce((sum, profile) => sum + parseInt(profile.age), 0);
+        return totalAge / profiles.length;
     };
 
     return (
@@ -170,7 +183,7 @@ function App() {
                     onClick={() => displayProfile(profile.name)}
                 />
             ))}
-            <Box>Moyenne d'age : ???</Box>
+            <Box>Moyenne d'age :{averageAge.toFixed(0)} </Box>
         </Box>
     );
 }
