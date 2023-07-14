@@ -77,6 +77,20 @@ const gens = [
     },
 ];
 
+function Profile ({name, age, description, onClick}: any) {
+    return (
+        <>
+            <Box p='4' bg='pink'>
+                {name},
+                {age},
+                {description}
+                <Button onClick={onClick}>Afficher</Button>
+            </Box>
+            <Divider/>
+        </>
+    );
+}
+
 function App() {
     const [profileDisplayed, setProfileDisplayed] = useState("");
 
@@ -114,90 +128,14 @@ function App() {
                 </Box>
             </Flex>
 
-            <Box p="4" bg="pink">
-                Alain Térieur
-                <Button onClick={() => displayProfile("Alain Térieur")}>
-                    Afficher
-                </Button>
-            </Box>
-            <Divider />
-            <Box p="4" bg="pink">
-                Alain Verse
-                <Button onClick={() => displayProfile("Alain Verse")}>
-                    Afficher
-                </Button>
-            </Box>
-            <Divider />
-            <Box p="4" bg="pink">
-                Alban Bou
-                <Button onClick={() => displayProfile("Alban Bou")}>
-                    Afficher
-                </Button>
-            </Box>
-            <Divider />
-            <Box p="4" bg="pink">
-                Albert Ichon
-                <Button onClick={() => displayProfile("Albert Ichon")}>
-                    Afficher
-                </Button>
-            </Box>
-            <Divider />
-            <Box p="4" bg="pink">
-                Aldo Berman
-                <Button onClick={() => displayProfile("Aldo Berman")}>
-                    Afficher
-                </Button>
-            </Box>
-            <Divider />
-            <Box p="4" bg="pink">
-                Édith Orial
-                <Button onClick={() => displayProfile("Édith Orial")}>
-                    Afficher
-                </Button>
-            </Box>
-            <Divider />
-            <Box p="4" bg="pink">
-                Edmond Fils
-                <Button onClick={() => displayProfile("Edmond Fils")}>
-                    Afficher
-                </Button>
-            </Box>
-            <Divider />
-            <Box p="4" bg="pink">
-                Edmond Grec
-                <Button onClick={() => displayProfile("Edmond Grec")}>
-                    Afficher
-                </Button>
-            </Box>
-            <Divider />
-            <Box p="4" bg="pink">
-                Lary Bambel
-                <Button onClick={() => displayProfile("Lary Bambel")}>
-                    Afficher
-                </Button>
-            </Box>
-            <Divider />
-            <Box p="4" bg="pink">
-                Laure Brille
-                <Button onClick={() => displayProfile("Laure Brille")}>
-                    Afficher
-                </Button>
-            </Box>
-            <Divider />
-            <Box p="4" bg="pink">
-                Laure Dure
-                <Button onClick={() => displayProfile("Laure Dure")}>
-                    Afficher
-                </Button>
-            </Box>
-            <Divider />
-            <Box p="4" bg="pink">
-                Laure Édubois
-                <Button onClick={() => displayProfile("Laure Édubois")}>
-                    Afficher
-                </Button>
-            </Box>
-            <Divider />
+            {gens.map((profie, index) => (
+                <Profile
+                    key={index}
+                    name={profie.name}
+                    age={profie.age}
+                    onClick={() => displayProfile(profie.name)}
+                />
+            ))}
             <Box>Moyenne d'age : ???</Box>
         </Box>
     );
