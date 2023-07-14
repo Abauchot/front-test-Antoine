@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./App.css";
 import { Box, Button, Divider, Flex } from "@chakra-ui/react";
 
-interface Profile {
+export interface Profile {
     name: string;
     age: string;
     description: string;
@@ -84,22 +84,17 @@ const gens : Profile[] = [
     },
 ];
 
-function Profile ({name, age, description, onClick}: any) {
-    return (
-        <>
-            <Box p='4' bg='pink'>
-                {name},
-                {age},
-                {description}
-                <Button onClick={onClick}>Afficher</Button>
-            </Box>
-            <Divider/>
-        </>
-    );
-}
+
 
 function App() {
     const [profileDisplayed, setProfileDisplayed] = useState("");
+    const [sortedByAge, setSortedByAge] = useState<"asc" | "desc">("asc");
+    const [sortedProfiles, setSortedProfiles] = useState<Profile[]>([]);
+
+    useEffect(() => {
+        sortProfilesByAge();
+    }, []);
+
 
     const displayProfile = (profile: string) => {
         setProfileDisplayed(profile);
@@ -118,6 +113,35 @@ function App() {
         return gensFiltered;
     };
 
+
+//fonction va permettre d'afficher tous les profiles
+    function Profile ({name, age, description, onClick}: any) {
+        return (
+            <>
+                <Box p='4' bg='pink'>
+                    {name},
+                    {age},
+                    {description}
+                    <Button onClick={onClick}>Afficher</Button>
+                </Box>
+                <Divider/>
+            </>
+        );
+    }
+
+    const sortProfilesByAge = () => {
+        const sortedGens = [...gens];
+        sortedGens.sort((a, b) => {
+            if (sortedByAge === "asc") {
+                return parseInt(a.age) - parseInt(b.age);
+            } else {
+                return parseInt(b.age) - parseInt(a.age);
+            }
+        });
+        setSortedByAge(sortedByAge === "asc" ? "desc" : "asc");
+        setSortedProfiles(sortedGens);
+    };
+
     return (
         <Box padding={5}>
             <Box>
@@ -134,8 +158,11 @@ function App() {
                     {gens.find((v) => v.name === profileDisplayed)?.description}
                 </Box>
             </Flex>
+            <Button onClick={sortProfilesByAge}>
+                Trier par âge {sortedByAge === "asc" ? "croissant" : "décroissant"}
+            </Button>
 
-            {gens.map((profile : Profile, index: number) => (
+            {sortedProfiles.map((profile: Profile, index: number) => (
                 <Profile
                     key={index}
                     name={profile.name}
