@@ -86,8 +86,8 @@ function App() {
 
     // métode qui retounr tous les Laure et Edmond en minuscule
     const returnLaureEtEdmond = (peoples: any): any => {
-        const gensFiltered = [];
-        peoples.forEach((v) => {
+        const gensFiltered: string[] = [];
+        peoples.forEach((v: { name: string; }) => {
             const firstNAme = v.name.split(" ")[0];
             if (firstNAme === "Laure" || firstNAme === "Edmond") {
                 var newName = firstNAme.toLowerCase();
@@ -101,7 +101,7 @@ function App() {
         <Box padding={5}>
             <Box>
                 Les Laures & Edmond
-                {returnLaureEtEdmond(gens).map((name) => (
+                {returnLaureEtEdmond(gens).map((name: string) => (
                     <p>{name}</p>
                 ))}
             </Box>
