@@ -91,9 +91,14 @@ function App() {
     const [averageAge, setAverageAge] = useState<number>(0);
 
 
-    useEffect(() => {
+    useEffect((): void => {
         sortProfilesByAge();
     }, []);
+
+    // afficher le nom de la personne sélectionnée dans le titre de la page
+    useEffect(() => {
+        document.title = profileDisplayed || "Profiles";
+    }, [profileDisplayed]);
 
 
     const displayProfile = (profile: string) => {
@@ -104,9 +109,9 @@ function App() {
     const returnLaureEtEdmond = (peoples: any): any => {
         const gensFiltered: string[] = [];
         peoples.forEach((v: { name: string; }) => {
-            const firstNAme = v.name.split(" ")[0];
+            const firstNAme: string = v.name.split(" ")[0];
             if (firstNAme === "Laure" || firstNAme === "Edmond") {
-                var newName = firstNAme.toLowerCase();
+                const newName: string = firstNAme.toLowerCase();
                 gensFiltered.push(newName);
             }
         });
@@ -116,9 +121,11 @@ function App() {
 
 //fonction va permettre d'afficher tous les profiles
     function Profile ({name, age, description, onClick}: any) {
+        const isOlder: boolean = parseInt(age) > 20;
+        const opacity: number = Math.min(parseInt(age) / 100, 1);
         return (
             <>
-                <Box p='4' bg='pink'>
+                <Box p='4' className={`profile-box ${isOlder ? 'older' : ''}`} style={{ backgroundColor: `rgba(46, 125, 50, ${opacity})` }} >
                     {name},
                     {age},
                     {description}
@@ -130,9 +137,9 @@ function App() {
     }
 
 //trier par age
-    const sortProfilesByAge = () => {
-        const sortedGens = [...gens];
-        sortedGens.sort((a, b) => {
+    const sortProfilesByAge = (): void => {
+        const sortedGens: Profile[] = [...gens];
+        sortedGens.sort((a: Profile, b:Profile) => {
             if (sortedByAge === "asc") {
                 return parseInt(a.age) - parseInt(b.age);
             } else {

@@ -36,3 +36,17 @@
     transform: rotate(360deg);
   }
 }
+
+.profile-box {
+  background-color: rgba(46, 125, 50, 0.2);
+  transition: background-color 0.5s;
+}
+
+.profile-box.older {
+  background-color: rgba(46, 125, 50, 0.8);
+}
+
+
+
+
+
