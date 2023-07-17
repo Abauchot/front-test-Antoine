@@ -97,7 +97,6 @@ function App() {
     const { theme, toggleTheme } = useThemeContext();
 
     const fetchGenderForName = async (name: string): Promise<string> => {
-        console.log(name)
         try {
             if(!name) return 'unknown'
             const response = await fetch(`https://api.genderize.io?name=${name.split(" ")[0]}`);
