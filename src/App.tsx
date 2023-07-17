@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
-import "./App.css";
-import { Box, Button, Divider, Flex } from "@chakra-ui/react";
+import "./css/App.css";
+import { Box, Button, Flex, Heading } from "@chakra-ui/react";
+import ProfileComponent from "./components/Profile";
+import { useThemeContext } from "./context/ThemeContext";
 
 export interface Profile {
     name: string;
     age: string;
     description: string;
+    gender?: string;
 }
 
 
@@ -84,62 +87,57 @@ const gens : Profile[] = [
     },
 ];
 
+
 function App() {
     const [profileDisplayed, setProfileDisplayed] = useState("");
+    const [profileDisplayedGender, setProfileDisplayedGender] = useState("");
     const [sortedByAge, setSortedByAge] = useState<"asc" | "desc">("asc");
     const [sortedProfiles, setSortedProfiles] = useState<Profile[]>([]);
     const [averageAge, setAverageAge] = useState<number>(0);
+    const { theme, toggleTheme } = useThemeContext();
+
+    const fetchGenderForName = async (name: string): Promise<string> => {
+        console.log(name)
+        try {
+            if(!name) return 'unknown'
+            const response = await fetch(`https://api.genderize.io?name=${name.split(" ")[0]}`);
+            const data = await response.json();
+            return data.gender;
+        } catch (error) {
+            console.error("Error fetching gender data:", error);
+            return 'unknown';
+        }
+    };
+
+    const displayProfile = async (profile: Profile): Promise<void> => {
+        setProfileDisplayed(profile.name);
+        if (!profile.gender) {
+            const gender = await fetchGenderForName(profile.name);
+            setProfileDisplayedGender(gender);
+            const updatedProfiles = sortedProfiles.map((p) => (p.name === profile.name ? { ...p, gender } : p));
+            setSortedProfiles(updatedProfiles);
+        }
+    };
 
 
+    // trier les profils par age
     useEffect((): void => {
         sortProfilesByAge();
     }, []);
 
     // afficher le nom de la personne sélectionnée dans le titre de la page
-    useEffect(() => {
+    useEffect((): void => {
         document.title = profileDisplayed || "Profiles";
     }, [profileDisplayed]);
 
 
-    const displayProfile = (profile: string) => {
-        setProfileDisplayed(profile);
-    };
-
-    // métode qui retounr tous les Laure et Edmond en minuscule
-    const returnLaureEtEdmond = (peoples: any): any => {
-        const gensFiltered: string[] = [];
-        peoples.forEach((v: { name: string; }) => {
-            const firstNAme: string = v.name.split(" ")[0];
-            if (firstNAme === "Laure" || firstNAme === "Edmond") {
-                const newName: string = firstNAme.toLowerCase();
-                gensFiltered.push(newName);
-            }
-        });
-        return gensFiltered;
-    };
 
 
-//fonction va permettre d'afficher tous les profiles
-    function Profile ({name, age, description, onClick}: any) {
-        const isOlder: boolean = parseInt(age) > 20;
-        const opacity: number = Math.min(parseInt(age) / 100, 1);
-        return (
-            <>
-                <Box p='4' className={`profile-box ${isOlder ? 'older' : ''}`} style={{ backgroundColor: `rgba(46, 125, 50, ${opacity})` }} >
-                    {name},
-                    {age},
-                    {description}
-                    <Button onClick={onClick}>Afficher</Button>
-                </Box>
-                <Divider/>
-            </>
-        );
-    }
 
 //trier par age
     const sortProfilesByAge = (): void => {
         const sortedGens: Profile[] = [...gens];
-        sortedGens.sort((a: Profile, b:Profile) => {
+        sortedGens.sort((a: Profile, b: Profile) => {
             if (sortedByAge === "asc") {
                 return parseInt(a.age) - parseInt(b.age);
             } else {
@@ -148,7 +146,9 @@ function App() {
         });
         setSortedByAge(sortedByAge === "asc" ? "desc" : "asc");
         setSortedProfiles(sortedGens);
-        const averageAge = calculateAverageAge(sortedGens);
+
+
+        const averageAge: number = calculateAverageAge(sortedGens);
         setAverageAge(averageAge);
     };
 
@@ -157,40 +157,36 @@ function App() {
         if (profiles.length === 0) {
             return 0;
         }
-
-        const totalAge = profiles.reduce((sum, profile) => sum + parseInt(profile.age), 0);
+        const totalAge: number = profiles.reduce((sum: number, profile: Profile) => sum + parseInt(profile.age), 0);
         return totalAge / profiles.length;
     };
 
     return (
         <Box padding={5}>
-            <Box>
-                Les Laures & Edmond
-                {returnLaureEtEdmond(gens).map((name: string) => (
-                    <p>{name}</p>
-                ))}
-            </Box>
-
-            <Flex flexDir="column" bg="blue.200" color="white" p="4">
-                Profile à afficher : {profileDisplayed}
-                <Box>
-                    Description:
-                    {gens.find((v) => v.name === profileDisplayed)?.description}
-                </Box>
-            </Flex>
+            <Heading textAlign="center" color={theme === "light" ? "black" : "white"}>
+                Profiles
+            </Heading>
+            <Button onClick={toggleTheme}>Toggle theme</Button>
             <Button onClick={sortProfilesByAge}>
                 Trier par âge {sortedByAge === "asc" ? "croissant" : "décroissant"}
             </Button>
-
+            <Box textAlign="right">Moyenne d'age :{averageAge.toFixed(0)} </Box>
+            <Flex flexDir="column" bg="blue.200" color="white" p="4">
+                Profile à afficher : {profileDisplayed}<br/>
+                Gender: {profileDisplayedGender}
+                <Box>
+                    Description:
+                    {gens.find((v: Profile): boolean => v.name === profileDisplayed)?.description}
+                </Box>
+            </Flex>
             {sortedProfiles.map((profile: Profile, index: number) => (
-                <Profile
+                <ProfileComponent
                     key={index}
                     name={profile.name}
                     age={profile.age}
-                    onClick={() => displayProfile(profile.name)}
-                />
+                    onClick={() => displayProfile(profile)}
+                 />
             ))}
-            <Box>Moyenne d'age :{averageAge.toFixed(0)} </Box>
         </Box>
     );
 }
